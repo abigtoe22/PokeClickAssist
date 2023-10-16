@@ -9,41 +9,60 @@ namespace ConsoleApp
     {
         static void Main(string[] args)
         {
-            int mouseX = 0;
-            int mouseY = 0;
+            Point mousePosition = new Point();
 
-            Console.WriteLine("Press Enter to Capture Cursor Position...");
             while (true)
             {
-                // New point that will be updated by the function with the current coordinates
+                Console.Clear();
+                Console.WriteLine("Press Enter to Capture Cursor Position...");
+                mousePosition = detectMode();
+
+                Console.Clear();
+                Console.WriteLine("Clicking. Press Space to Stop...");
+                clickMode(mousePosition.X, mousePosition.Y);
+
+                if (checkEscape())
+                    return;
+            }
+        }
+
+        static Point detectMode()
+        {
+            
+            while (true)
+            {
                 Point defPnt = new Point();
 
-                // Call the function and pass the Point, defPnt
                 GetCursorPos(ref defPnt);
 
-                // Now after calling the function, defPnt contains the coordinates which we can read
-                mouseX = defPnt.X;
-                mouseY = defPnt.Y;
-                //Thread.Sleep(200);
-                if (checkEnter())
+                if (checkEnter() || checkEscape())
                 {
-                    break;
+                    return defPnt;
                 }
             }
+        }
 
-            Console.Clear();
-            Console.WriteLine("Clicking. Press Space to Stop...");
-
+        static void clickMode(int x, int y)
+        {
             while (true)
             {
-
-                mouseClick(mouseX, mouseY);
+                mouseClick(x, y);
                 Thread.Sleep(100);
-                if (checkSpace())
+                if (checkSpace() || checkEscape())
                 {
                     return;
                 }
             }
+        }
+
+        static bool checkEscape()
+        {
+            if ((GetAsyncKeyState(27) & 0x8000) > 0)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         static bool checkSpace()
